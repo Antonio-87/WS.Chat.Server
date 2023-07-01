@@ -50,6 +50,12 @@ wsServer.on('connection', (ws) => {
         .filter(client => client.readyState === WS.OPEN)
         .forEach(client => client.send(eventDataChat));
     }
+
+    if (typeof (item) === "object" && item.status === false) {
+      const index = nicknames.indexOf(item.nickname);
+      nicknames.splice(index, 1);
+    }
+
     ws.send(JSON.stringify({ nicknames }));
     ws.send(JSON.stringify({ chat }));
   });
