@@ -5,6 +5,7 @@ const cors = require('@koa/cors');
 const { v4: uuidv4 } = require('uuid');
 const formatDate = require('./formatDate');
 const WS = require("ws");
+const ArrayBufferConverter = require('./ArrayBufferConverter');
 
 const app = new Koa();
 const router = new Router();
@@ -29,32 +30,37 @@ const chat = ['welcome to our chat'];
 
 wsServer.on('connection', (ws) => {
   ws.on('message', (item) => {
-    if (typeof (item) === "object") {
-      const nicknameExists = nicknames.some( el => el.data !== item.data);
+    const buffer = new ArrayBufferConverter(item);
+    const data = JSON.parse(buffer.toString());
+    console.log(data);
+    const { nickname, message, status } = data;
+    if (nickname && !status) {
+      const nicknameExists = nicknames.some( el => el === nickname);
       if (nicknameExists === false) {
-        nicknames.push(item);
+        nicknames.push(nickname); 
+      }
+    }
 
-        const eventDataNicknames = JSON.stringify({ nicknames });
+    if (message) {
+      chat.push(message);
+    }
+
+    if (nickname && status === false) {
+      const index = nicknames.indexOf(nickname);
+      if (index !== -1) nicknames.splice(index, 1);
+    }
+
+    const eventDataNicknames = JSON.stringify({ nicknames });
 
         Array.from(wsServer.clients)
           .filter(client => client.readyState === WS.OPEN)
           .forEach(client => client.send(eventDataNicknames));
-      }
-    }
-    if (typeof (item) === "string") {
-      chat.push(item);
 
-      const eventDataChat = JSON.stringify({ chat: [message] });
+    const eventDataChat = JSON.stringify({ chat: [message] });
 
       Array.from(wsServer.clients)
         .filter(client => client.readyState === WS.OPEN)
         .forEach(client => client.send(eventDataChat));
-    }
-
-    if (typeof (item) === "object" && item.status === false) {
-      const index = nicknames.indexOf(item.nickname);
-      nicknames.splice(index, 1);
-    }
 
     ws.send(JSON.stringify({ nicknames }));
     ws.send(JSON.stringify({ chat }));
