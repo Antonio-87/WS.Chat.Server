@@ -66,6 +66,6 @@ wsServer.on('connection', (ws) => {
     ws.send(JSON.stringify({ chat }));
   });
 
-    ws.send(JSON.stringify({ nicknames }));
-    ws.send(JSON.stringify({ chat }));
+  ws.send(JSON.stringify({ nicknames }));
+  ws.send(JSON.stringify({ chat }));
 });
