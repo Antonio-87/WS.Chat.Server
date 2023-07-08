@@ -6,13 +6,13 @@ function formatDate(timestamp) {
     const hours = date.getHours();
     const minutes = date.getMinutes();
     if (month < 10 && hours < 10) {
-      return `${day}.0${month}.${year} 0${hours}:${minutes}`;
+      return `0${hours}:${minutes} ${day}.0${month}.${year}`;
     } else if (month < 10 && hours >= 10) {
-      return `${day}.0${month}.${year} ${hours}:${minutes}`;
+      return `${hours}:${minutes} ${day}.0${month}.${year}`;
     } else if (month >= 10 && hours < 10) {
-      return `${day}.${month}.${year} 0${hours}:${minutes}`;
+      return `0${hours}:${minutes} ${day}.${month}.${year}`;
     } else {
-      return `${day}.${month}.${year} ${hours}:${minutes}`;
+      return `${hours}:${minutes} ${day}.${month}.${year} `;
     }
   }
 

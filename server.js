@@ -2,7 +2,6 @@ const Koa = require('koa');
 const BodyParser = require('koa-bodyparser');
 const Router = require('koa-router');
 const cors = require('@koa/cors');
-const { v4: uuidv4 } = require('uuid');
 const formatDate = require('./formatDate');
 const WS = require("ws");
 const ArrayBufferConverter = require('./ArrayBufferConverter');
@@ -41,8 +40,12 @@ wsServer.on('connection', (ws) => {
       }
     }
 
-    if (message) {
-      chat.push(message);
+    if (nickname && message) {
+      chat.push({
+        nickname: nickname,
+        message: message,
+        time: formatDate(Date.now()),
+      });
     }
 
     if (nickname && status === false) {
@@ -56,7 +59,7 @@ wsServer.on('connection', (ws) => {
           .filter(client => client.readyState === WS.OPEN)
           .forEach(client => client.send(eventDataNicknames));
 
-    const eventDataChat = JSON.stringify({ chat: [message] });
+    const eventDataChat = JSON.stringify({ chat });
 
       Array.from(wsServer.clients)
         .filter(client => client.readyState === WS.OPEN)
