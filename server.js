@@ -25,7 +25,7 @@ const server = app.listen(7070, () => {
 const wsServer = new WS.Server({server})
 
 const nicknames = [];
-const chat = ['welcome to our chat'];
+const chat = [];
 
 wsServer.on('connection', (ws) => {
   ws.on('message', (item) => {
